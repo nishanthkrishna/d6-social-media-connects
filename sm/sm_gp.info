@@ -1,0 +1,5 @@
+name =Gplus
+description =Gplus website integration
+package = Social Media
+core = 6.x
+version = "6.x-1.1"

@@ -1,0 +1,74 @@
+<?php
+/*
+*
+* Implements hook_perm()
+*/
+
+function sm_gp_perm() {
+    return array('administer sm_gp','administer sm_gp settings');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+
+function sm_gp_menu() {
+    $items=array();
+    $items['admin/settings/gp'] = array(
+    'title' => 'Google OAuth settings ',
+    'description' => 'Google OAuth settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('sm_gp_settings_form'),
+    'access arguments' => array('administer sm_gp settings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'sm_gp_admin.inc'
+    );
+    $items['gp/connect'] = array(
+    'title' => 'Google connect',
+    'page callback' => 'sm_gp_connect',
+    'access callback' => TRUE,
+    'description' => 'Callback for google connect.',
+    'file' => 'includes/gpauth.inc',
+    'type' => MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function sm_gp_theme() {
+    return array(
+    'sm_gp_connect_button' => array(
+    'arguments' => array('login_url' => NULL,'display'=>NULL),
+    'template' =>'sm-gp-connect-button',
+    'path' =>drupal_get_path('module', 'sm_gp')."/themes",
+    'theme path' =>path_to_theme()
+    )
+
+    );
+
+}
+
+function sm_gp_block($op = 'list', $delta = 0, $edit = array()) {
+
+    switch ($op) {
+        case 'list':
+            return array(
+            'sm_gp_connect' => array('info' => t('Google connect'), 'cache' => BLOCK_NO_CACHE),
+            );
+
+        case 'view':
+            switch ($delta) {
+                case 'sm_gp_connect':
+                    require_once('includes/gpauth.inc');
+                    $client=_sm_gp_init();
+                    $login_url=$client->createAuthUrl();
+                    $content=theme('sm_gp_connect_button',$login_url);
+                    return array('subject' => t('Google connect'), 'content' => $content);
+                    break;
+            }
+    }
+
+}

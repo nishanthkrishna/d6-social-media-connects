@@ -1,0 +1,32 @@
+<?php
+
+
+/**
+ * Implementation of hook_install().
+ */
+function sm_fb_install() {
+
+  drupal_install_schema('sm_fb');
+}
+
+
+
+function sm_fb_schema() {
+  $schema['fb_user'] = array(
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE,
+      ),
+      'fbu' => array(
+        // http://forum.developers.facebook.net/viewtopic.php?pid=4676
+        'type' => 'int', 'size' => 'big', 'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid'),
+    'unique keys' => array(
+      'fbu' => array('fbu')),
+  );
+
+
+  return $schema;
+}
